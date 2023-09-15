@@ -1,5 +1,16 @@
-﻿internal class Program
+﻿using System.Data;
+
+internal class Program
 {
+    public class Course
+{
+    public string? CourseCode { get; set; }
+    public int CourseUnit { get; set; }
+    public string? Grade { get; set; }
+    public int GradeUnit { get; set; }
+ public int Weight { get; set; }
+  public string? Remark { get; set; }
+}
     private static void Main(string[] args)
     {
         Console.WriteLine("Hello, World!");
@@ -7,9 +18,12 @@
         int TotalCourseUnit=0;
         int TotalGradeUnit=0;
         int gradeunit=1;
-        string grade;
-        string Remark;
-        for(int i=0; i<5; i++){
+        string grade = "";
+        string Remark = "";
+
+        var finalCourseCode = new List<Course>();
+        
+        for(int i=0; i<2; i++){
             
             Console.WriteLine("Enter the "+(i+1)+"st Course code: ");
             string CourseCode= Console.ReadLine();
@@ -53,9 +67,32 @@
             int weightPoint = gradeunit * courseUnit;
             TotalweightPoint +=weightPoint;
             TotalCourseUnit += courseUnit;  
-            TotalGradeUnit += gradeunit; 
+            TotalGradeUnit += gradeunit;
+
+            finalCourseCode.Add(new Course
+            {
+                CourseCode = CourseCode,
+                CourseUnit = courseUnit,
+                Grade = grade,
+                GradeUnit = gradeunit,
+                Remark = Remark,
+                Weight = weightPoint
+            }) ;
         }
-        var table = new ConsoleTable("COURSE CODE", "COURSE UNIT", "GRADE","GRADE-UNIT","WEIGHT Pt","Remark");
+        // string myCourseCode = CourseCode.ToString();
+        // string mycourseUnit = courseUnit.ToString();
+        // string mygrade = grade.ToString();
+        // string myWeightpoint = weightPoint.ToString();
+        ConsoleTable.PrintLine();
+        ConsoleTable.PrintRow("COURSE CODE", "COURSE UNIT","GRADE","GRADE UNIT","WEIGHT pt","REMARK");
+        ConsoleTable.PrintLine();
+
+        foreach(var course in finalCourseCode)
+        {
+            ConsoleTable.PrintRow(course.CourseCode,course.CourseUnit.ToString(),course.Grade,course.GradeUnit.ToString(),course.Weight.ToString(),course.Remark);
+        }
+
+        
         
          
         /*double GPA = TotalweightPoint / TotalCourseUnit;
@@ -66,25 +103,38 @@
     }
 }
 
-internal class ConsoleTable
+
+
+public static class ConsoleTable
 {
-    private string v1;
-    private string v2;
-    private string v3;
-
-    public ConsoleTable(string v1, string v2, string v3, string v)
+    static int tablewidth = 70;
+    public static void PrintLine()
     {
-        this.v1 = v1;
-        this.v2 = v2;
-        this.v3 = v3;
+        Console.WriteLine(new string('-', tablewidth));
+
+    }
+    public static void PrintRow(params string[] columns)
+    {
+
+        int width= (tablewidth - columns.Length)/columns.Length;
+        string row = "|";
+        foreach(string column in columns){
+            row += AlignCentre(column,width) + "|";
+        }
+        Console.WriteLine(row);
     }
 
-    public ConsoleTable(string v1, string v2, string v3, string v, string v4, string v5) : this(v1, v2, v3, v)
+    private static string AlignCentre(string text, int width)
     {
-        V4 = v4;
-        V5 = v5;
+        text = text.Length > width ? text.Substring(0, width - 3) + "..." : text;
+        if (string.IsNullOrEmpty(text))
+        {
+            return new string(' ', width);
+        }
+        else
+        {
+            return text.PadRight(width - (width - text.Length) / 2).PadLeft(width);
+        }
     }
 
-    public string V4 { get; }
-    public string V5 { get; }
 }
